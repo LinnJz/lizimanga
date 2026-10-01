@@ -1,0 +1,16 @@
+.gradle/
+build/
+local.properties
+.idea/
+*.iml
+.DS_Store
+captures/
+.externalNativeBuild/
+.cxx/
+
+# 取证用的临时解包目录（不提交）
+libs/aar_x/
+
+# 构建日志 / 本地依赖暂存
+build.log
+libs/

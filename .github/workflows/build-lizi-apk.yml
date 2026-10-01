@@ -1,0 +1,50 @@
+name: build-lizi-apk
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - "mihon-extension-lizi-main/**"
+      - ".github/workflows/build-lizi-apk.yml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mihon-extension-lizi-main
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: gradle
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android 36 + Build-Tools
+        run: |
+          sdkmanager --install "platforms;android-36" "build-tools;36.0.0" "platform-tools"
+          sdkmanager --licenses < /dev/null || yes | sdkmanager --licenses > /dev/null
+
+      - name: Build release APK
+        run: |
+          chmod +x gradlew
+          ./gradlew :assembleRelease --stacktrace --no-daemon
+
+      - name: Rename APK to repo convention
+        run: |
+          ls -lh app/build/outputs/apk/release/
+          cp app/build/outputs/apk/release/app-release.apk "$GITHUB_WORKSPACE/apk/tachiyomi-zh.lizi-v1.6.2.apk"
+          ls -lh "$GITHUB_WORKSPACE/apk/"
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tachiyomi-zh.lizi-v1.6.2
+          path: apk/tachiyomi-zh.lizi-v1.6.2.apk
