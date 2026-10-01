@@ -47,8 +47,11 @@ jobs:
 
       - name: Rename APK to repo convention
         run: |
-          ls -lh app/build/outputs/apk/release/
-          cp app/build/outputs/apk/release/app-release.apk "$GITHUB_WORKSPACE/apk/tachiyomi-zh.lizi-v1.6.2.apk"
+          ls -R build/outputs/apk || true
+          APK=$(find build/outputs -name '*.apk' | head -n 1)
+          echo "Found APK: $APK"
+          test -n "$APK"
+          cp "$APK" "$GITHUB_WORKSPACE/apk/tachiyomi-zh.lizi-v1.6.2.apk"
           ls -lh "$GITHUB_WORKSPACE/apk/"
 
       - name: Upload APK artifact
